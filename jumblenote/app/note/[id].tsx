@@ -19,7 +19,6 @@ export default function NoteScreen() {
   const [loading, setLoading] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
   const [titleHeight, setTitleHeight] = useState(50); // Initial height
-  const [contentHeight, setContentHeight] = useState(38);
   const [isEdited, setIsEdited] = useState(false);
   const isNewNote = id === 'new';
 
@@ -135,11 +134,7 @@ export default function NoteScreen() {
         />
 
         <TextInput
-          style={[styles.contentInput, { height: contentHeight }]}
-          onContentSizeChange={(event) =>
-            setContentHeight(event.nativeEvent.contentSize.height)
-          }
-          selectionColor='transparent'
+          style={styles.contentInput}
           value={content}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -150,7 +145,6 @@ export default function NoteScreen() {
           placeholder="Start typing your note..."
           placeholderTextColor="#999"
           multiline
-
           textAlignVertical="top"
         />
       </ScrollView>
@@ -198,6 +192,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    flexGrow: 1,
     padding: 16,
   },
   titleInput: {
@@ -213,8 +208,10 @@ const styles = StyleSheet.create({
     textAlignVertical: "top", // Ensures text starts at the top
   },
   contentInput: {
+    flexGrow: 1,
     fontSize: 16,
     lineHeight: 24,
+    minHeight: 80,
     padding: 8,
     width: "100%",
     borderWidth: 0,
