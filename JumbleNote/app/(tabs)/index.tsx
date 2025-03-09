@@ -6,8 +6,8 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
 export default function HomeScreen() {
-  const api_key = process.env.EXPO_PUBLIC_API_KEY;
-  const api2 = process.env.API_KEY;
+  //const api_key = process.env.EXPO_PUBLIC_API_KEY;
+  const api_key = process.env.API_KEY;
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -25,7 +25,7 @@ export default function HomeScreen() {
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>
           {api_key} is the api key!
-          {api2} is api key 
+          
         </ThemedText>
         <ThemedText>
           Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
