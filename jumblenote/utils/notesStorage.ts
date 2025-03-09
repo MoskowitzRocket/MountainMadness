@@ -30,7 +30,7 @@ const fetchPerplexityResponse = async (input: string): Promise<string> => {
     body: JSON.stringify({
       model: "sonar",
       messages: [
-        { role: "system", content:  CAMERON_PROMPT},
+        { role: "system", content:  original_prompt},
         { role: "user", content: input },
       ],
       max_tokens: 123,
