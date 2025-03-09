@@ -28,6 +28,11 @@ export default function Index() {
           { id: 4, title: "Things that John likes", content: "Horses, dewfewfefwogs, flowers, b...", date: "1998-03-23" },
           { id: 5, title: "Brainrot Dictionary for Dad", content: "Levewefefwwefl 10 gyatt, sigma boy,...", date: "2013-01-27" },
           { id: 6, title: "Homework Checklist", content: "Lorem ipsum wefefwfewdolor sit...", date: "2024-10-03" },
+          { id: 7, title: "Homework Checklist", content: "Lorem ipsum wefefwfewdolor sit...", date: "2024-10-03" },
+          { id: 8, title: "Homework Checklist", content: "Lorem ipsum wefefwfewdolor sit...", date: "2024-10-03" },
+          { id: 9, title: "Homework Checklist", content: "Lorem ipsum wefefwfewdolor sit...", date: "2024-10-03" },
+          { id: 10, title: "Homework Checklist", content: "Lorem ipsum wefefwfewdolor sit...", date: "2024-10-03" },
+
         ]);
       }
     }, 2000);
@@ -70,9 +75,6 @@ export default function Index() {
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
-        <TouchableOpacity style={styles.sortButton}>
-          <Text>↕</Text>
-        </TouchableOpacity>
       </View>
 
       {/* List of notes */}
@@ -232,7 +234,8 @@ const styles = StyleSheet.create({
 
   addButtonText: {
     color: "white",
-    fontSize: 50,
-    alignItems: "center",
+    fontSize: 40,
+    height: 55,
+
   },
 }); 
