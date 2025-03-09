@@ -7,7 +7,9 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  Animated,
+  Image
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { getNoteById, saveNote, updateNote, deleteNote } from '../../utils/notesStorage';
@@ -22,6 +24,27 @@ export default function NoteScreen() {
   const [contentHeight, setContentHeight] = useState(38);
   const [isEdited, setIsEdited] = useState(false);
   const isNewNote = id === 'new';
+
+  const [JumboUp] = useState(new Animated.Value(0)); // position for bird1
+  const [JumboDown] = useState(new Animated.Value(100)); // position for bird2
+
+  const [savingNote, setSavingNote] = useState(false);
+
+  const flyjumbofly = () => {
+    // Loop between images by animating opacity
+    Animated.loop(
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(JumboUp, { toValue: 1, duration: 600, useNativeDriver: true }), // show 1
+          Animated.timing(JumboDown, { toValue: 0, duration: 0, useNativeDriver: true }), // hide 2
+        ]),
+        Animated.parallel([
+          Animated.timing(JumboUp, { toValue: 0, duration: 0, useNativeDriver: true }), // show 2
+          Animated.timing(JumboDown, { toValue: 1, duration: 600, useNativeDriver: true }), // hide 1
+        ]),
+      ])
+    ).start();
+  };
 
   useEffect(() => {
     const loadNote = async () => {
@@ -83,82 +106,98 @@ export default function NoteScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={async () => {
-          if (isEdited) {
-            if (title.trim() || content.trim()) {
-              try {
-                if (isNewNote) {
-                  await saveNote({ title: title || "Untitled", content });
-                } else {
-                  await updateNote({
-                    id: id as string,
-                    title: title || "Untitled",
-                    content,
-                    date: new Date().toISOString()
-                  });
-                }
-              } catch (error) {
-                console.error("Error saving note:", error);
-              }
-            }
-          }
-          router.back();
-        }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ color: '#F40125' }}>{"\<"} </Text>
-            <Text style={styles.backButton}>Back</Text>
+    <>
+      {savingNote ? (
+        <View style={styles.splashContainer}>
+          <Image
+            source={require("../../assets/images/slogan2.png")}
+            style={{ width: 335, height: 160 }}
+          />
+          <View style={styles.jumboup}>
+            <Animated.Image
+              source={require("../../assets/images/jumbofly1.png")}
+              style={[styles.birdImage, { opacity: JumboUp }]}
+            />
           </View>
-        </TouchableOpacity>
-
-        <View style={styles.actionButtons}>
-          <TouchableOpacity onPress={handleDelete} style={styles.deleteButton}>
-            <Text style={styles.deleteButtonText}>Delete</Text>
-          </TouchableOpacity>
+          <View style={styles.jumbodown}>
+            <Animated.Image
+              source={require("../../assets/images/jumbofly2.png")}
+              style={[styles.birdImage, { opacity: JumboDown }]}
+            />
+          </View>
         </View>
-      </View>
+      ) : (
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => {
+              setSavingNote(true);
+              flyjumbofly();
+              setTimeout(() => {
+                router.back();
+              }, 3000);
+            }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ color: '#F40125' }}>{"\<"} </Text>
+                <Text style={styles.backButton}>Back</Text>
+              </View>
+            </TouchableOpacity>
 
-      <ScrollView style={styles.content}>
-        <TextInput
-          style={[styles.titleInput, { height: titleHeight }]}
-          onContentSizeChange={(event) =>
-            setTitleHeight(event.nativeEvent.contentSize.height)
-          }
-          scrollEnabled={false}
-          value={title}
-          onChangeText={setTitle}
-          placeholder="Note title"
-          multiline
-          placeholderTextColor="#999"
+            <View style={styles.actionButtons}>
+              <TouchableOpacity onPress={handleDelete} style={styles.deleteButton}>
+                <Text style={styles.deleteButtonText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
 
-        />
+          <ScrollView style={styles.content}>
+            <TextInput
+              style={[styles.titleInput, { height: titleHeight }]}
+              onContentSizeChange={(event) =>
+                setTitleHeight(event.nativeEvent.contentSize.height)
+              }
+              scrollEnabled={false}
+              value={title}
+              onChangeText={setTitle}
+              placeholder="Note title"
+              multiline
+              placeholderTextColor="#999"
 
-        <TextInput
-          style={[styles.contentInput, { height: contentHeight }]}
-          onContentSizeChange={(event) =>
-            setContentHeight(event.nativeEvent.contentSize.height)
-          }
-          selectionColor='transparent'
-          value={content}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          onChangeText={(text) => {
-            setContent(text)
-            setIsEdited(true)
-          }}
-          placeholder="Start typing your note..."
-          placeholderTextColor="#999"
-          multiline
+            />
 
-          textAlignVertical="top"
-        />
-      </ScrollView>
-    </View>
+            <TextInput
+              style={[styles.contentInput, { height: contentHeight }]}
+              onContentSizeChange={(event) =>
+                setContentHeight(event.nativeEvent.contentSize.height)
+              }
+              selectionColor='transparent'
+              value={content}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              onChangeText={(text) => {
+                setContent(text)
+                setIsEdited(true)
+              }}
+              placeholder="Start typing your note..."
+              placeholderTextColor="#999"
+              multiline
+
+              textAlignVertical="top"
+            />
+          </ScrollView>
+        </View>
+      )}
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  splashContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 20
+  },
   container: {
     paddingTop: 20,
     flex: 1,
@@ -222,6 +261,30 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     paddingHorizontal: 10,
     paddingVertical: 5,
-    textAlignVertical: "top", // Ensures text starts at the top
+    textAlignVertical: "top",
   },
+  jumboup: {
+    position: "absolute",
+    top: 620,
+    left: 0,
+    right: 0,
+    justifyContent: "center",
+      alignItems: "center",
+    },
+  
+    jumbodown: {
+      position: "absolute",
+      top: 670,
+      left: 0,
+      right: 10,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+  
+    birdImage: {
+      width: 100,
+      height: 100,
+      position: "absolute",
+      zIndex: 10,
+    }
 }); 
