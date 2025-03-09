@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
   ScrollView,
   Alert,
   ActivityIndicator
@@ -17,8 +17,11 @@ export default function NoteScreen() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isFocused, setIsFocused] = useState(false);
+  const [titleHeight, setTitleHeight] = useState(50); // Initial height
+  const [contentHeight, setContentHeight] = useState(38);
   const isNewNote = id === 'new';
-  
+
   useEffect(() => {
     const loadNote = async () => {
       if (!isNewNote) {
@@ -38,16 +41,16 @@ export default function NoteScreen() {
       }
       setLoading(false);
     };
-    
+
     loadNote();
   }, [id, isNewNote]);
-  
+
   const handleSave = async () => {
     if (!title.trim()) {
       Alert.alert('Error', 'Please enter a title');
       return;
     }
-    
+
     try {
       if (isNewNote) {
         await saveNote({ title, content });
@@ -65,13 +68,13 @@ export default function NoteScreen() {
       Alert.alert('Error', 'Failed to save note');
     }
   };
-  
+
   const handleDelete = async () => {
     if (isNewNote) {
       router.back();
       return;
     }
-    
+
     Alert.alert(
       'Delete Note',
       'Are you sure you want to delete this note?',
@@ -93,7 +96,7 @@ export default function NoteScreen() {
       ]
     );
   };
-  
+
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -101,41 +104,53 @@ export default function NoteScreen() {
       </View>
     );
   }
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Back</Text>
+          <span>
+            <Text style={{ color: '#F40125' }}>{"\<"} </Text>
+            <Text style={styles.backButton}>Back</Text>
+          </span>
         </TouchableOpacity>
-        
+
         <View style={styles.actionButtons}>
-          <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-            <Text style={styles.saveButtonText}>Save</Text>
-          </TouchableOpacity>
-          
           <TouchableOpacity onPress={handleDelete} style={styles.deleteButton}>
             <Text style={styles.deleteButtonText}>Delete</Text>
           </TouchableOpacity>
         </View>
       </View>
-      
+
       <ScrollView style={styles.content}>
         <TextInput
-          style={styles.titleInput}
+          style={[styles.titleInput, { height: titleHeight }]}
+          onContentSizeChange={(event) =>
+            setTitleHeight(event.nativeEvent.contentSize.height)
+          }
+          scrollEnabled={false}
           value={title}
           onChangeText={setTitle}
           placeholder="Note title"
+          multiline
           placeholderTextColor="#999"
+
         />
-        
+
         <TextInput
-          style={styles.contentInput}
+          style={[styles.contentInput, { height: contentHeight }]}
+          onContentSizeChange={(event) =>
+            setContentHeight(event.nativeEvent.contentSize.height)
+          }
+          selectionColor='transparent'
           value={content}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           onChangeText={setContent}
           placeholder="Start typing your note..."
           placeholderTextColor="#999"
           multiline
+
           textAlignVertical="top"
         />
       </ScrollView>
@@ -146,7 +161,7 @@ export default function NoteScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#ffffff",
   },
   centerContent: {
     justifyContent: 'center',
@@ -157,13 +172,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
     backgroundColor: '#fff',
   },
   backButton: {
     fontSize: 16,
-    color: '#007AFF',
+    color: '#FFC805',
   },
   actionButtons: {
     flexDirection: 'row',
@@ -188,14 +201,31 @@ const styles = StyleSheet.create({
   titleInput: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
-    padding: 8,
+    marginBottom: 10,
+    width: "100%",
+    borderWidth: 0,
+    borderColor: "transparent",
+    overflow: 'hidden',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    textAlignVertical: "top", // Ensures text starts at the top
   },
   contentInput: {
-    flex: 1,
+    outline: 'none',
     fontSize: 16,
     lineHeight: 24,
     padding: 8,
-    minHeight: 300,
+    width: "100%",
+    borderWidth: 0,
+    borderColor: "transparent",
+    overflow: 'hidden',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    textAlignVertical: "top", // Ensures text starts at the top
+  },
+  contentInputFocus: {
+    outline: 'none',
+    borderWidth: 0,
+    borderColor: 'transparent',
   },
 }); 
