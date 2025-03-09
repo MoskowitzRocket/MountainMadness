@@ -46,35 +46,6 @@ export default function NoteScreen() {
     loadNote();
   }, [id, isNewNote]);
 
-  const handleSave = async () => {
-    if (!title.trim()) {
-      Alert.alert('Error', 'Please enter a title');
-      return;
-    }
-
-    if (!isEdited)
-    {
-      return;
-    }
-
-    try {
-      if (isNewNote) {
-        await saveNote({ title, content });
-      } else {
-        await updateNote({
-          id: id as string,
-          title,
-          content,
-          date: new Date().toISOString()
-        });
-      }
-      router.back();
-    } catch (error) {
-      console.error('Error saving note:', error);
-      Alert.alert('Error', 'Failed to save note');
-    }
-  };
-
   const handleDelete = async () => {
     if (isNewNote) {
       router.back();
@@ -115,20 +86,22 @@ export default function NoteScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={async () => {
-          if (title.trim() || content.trim()) {
-            try {
-              if (isNewNote) {
-                await saveNote({ title: title || "Untitled", content });
-              } else {
-                await updateNote({
-                  id: id as string,
-                  title: title || "Untitled",
-                  content,
-                  date: new Date().toISOString()
-                });
+          if (isEdited) {
+            if (title.trim() || content.trim()) {
+              try {
+                if (isNewNote) {
+                  await saveNote({ title: title || "Untitled", content });
+                } else {
+                  await updateNote({
+                    id: id as string,
+                    title: title || "Untitled",
+                    content,
+                    date: new Date().toISOString()
+                  });
+                }
+              } catch (error) {
+                console.error("Error saving note:", error);
               }
-            } catch (error) {
-              console.error("Error saving note:", error);
             }
           }
           router.back();
