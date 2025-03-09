@@ -283,7 +283,6 @@ const styles = StyleSheet.create({
     color: '#888',
   },
 
-  //***************************************************************** */
   jumboup: {
     position: "absolute",
     top: 620,
@@ -308,4 +307,5 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 10,
   },
+
 }); 
