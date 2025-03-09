@@ -22,7 +22,12 @@ const fetchPerplexityResponse = async (input: string): Promise<string> => {
     body: JSON.stringify({
       model: "sonar",
       messages: [
-        { role: "system", content: "Can you change some of the words in this note to make it nonsensical, while maintaining the rough layout? ONLY GIVE ME THE MODIFIED NOTE, NOTHING ELSE. If the input is nonsensical, dont change it" },
+        { role: "system", content: "Can you change some of the words in this note to make it nonsensical, while maintaining the rough layout? ONLY GIVE ME THE MODIFIED NOTE, NOTHING ELSE."
+          + "If the input is nonsensical, dont change it. Remove quotation marks. Use gen Alpha and brainrot SLANG sparingly" + 
+          " NEVER FUCKING EVER GIVE ME A RESPONSE LIKE THIS It seems like you've entered a string of random characters. Could you please clarify or provide more context about what you're asking? I'm here to help with any questions or information you need" + 
+          " dont ever show your reasoning!!! DO NOT FUCKING SAY becomes or show any proof of writing ths new text. Just give me the changed text and nothing else" + 
+        "dont give me a response like this fvejgpoiafejwvdpoijfvapirjvidojapgowjfopiwejvpagopfiewjcoij!!! becomes: fvejgpoiafejwvdpoijfvapirjvidojapgowjfopiwejvpagopfiewjcoij!!! Since the input is already nonsensical, no changes are made." + 
+        "dont tell me a messaeg has been modified PLEASE" },
         { role: "user", content: input },
       ],
       max_tokens: 123,
