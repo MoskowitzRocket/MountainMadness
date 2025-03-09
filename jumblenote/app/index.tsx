@@ -11,7 +11,7 @@ import {
 import { router } from "expo-router";
 
 export default function Index() {
-  const [notes, setNotes] = useState<Array<{id: number, title: string, content: string, date: string}>>([]);
+  const [notes, setNotes] = useState<Array<{ id: number, title: string, content: string, date: string }>>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -22,19 +22,19 @@ export default function Index() {
       // Add sample notes
       if (notes.length === 0) {
         setNotes([
-          { id: 1, title: "John's Skincare Routine", content: "exfoliator, moisturizer...", date: "2013-06-18" },
+          { id: 1, title: "John's Skincare Routinessssssssssssssssssssssssssssssssssss", content: "How much wood can a woodchuck chuck if a wood chuck could chuck wood? Go to sleep, John. No. Why? There are monsters under my bed. Seriously, you're a grown ass man. NO! You are not my mother. Okay, but I am your wife. Either go to bed or take your schizo comms to the living room. Okay. Goodnight., moisturizer...", date: "2013-06-18" },
           { id: 2, title: "Date Ideas", content: "lol you're single, remember?", date: "2082-10-23" },
-          { id: 3, title: "Shopping List", content: "Eggs, knife, oats, peanuts...", date: "2025-05-05" },
-          { id: 4, title: "Things that John likes", content: "Horses, dogs, flowers, b...", date: "1998-03-23" },
-          { id: 5, title: "Brainrot Dictionary for Dad", content: "Level 10 gyatt, sigma boy,...", date: "2013-01-27" },
-          { id: 6, title: "Homework Checklist", content: "Lorem ipsum dolor sit...", date: "2024-10-03" },
+          { id: 3, title: "Shopping List", content: "Eggs, knife, peanuts...", date: "2025-05-05" },
+          { id: 4, title: "Things that John likes", content: "Horses, dewfewfefwogs, flowers, b...", date: "1998-03-23" },
+          { id: 5, title: "Brainrot Dictionary for Dad", content: "Levewefefwwefl 10 gyatt, sigma boy,...", date: "2013-01-27" },
+          { id: 6, title: "Homework Checklist", content: "Lorem ipsum wefefwfewdolor sit...", date: "2024-10-03" },
         ]);
       }
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
 
-  const filteredNotes = notes.filter(note => 
+  const filteredNotes = notes.filter(note =>
     note.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -47,16 +47,21 @@ export default function Index() {
   if (isLoading) {
     return (
       <View style={styles.splashContainer}>
-        <Text style={styles.jumbleTitle}>JUMBLENOTE</Text>
-        <Text style={styles.jumbleSubtitle}>THE ONLY NOTETAKING APP YOU WILL EVER NEED</Text>
+        <Image
+          source={require("../assets/images/home slogan.png")}
+          style={{ width: 330, height: 160, top: -60 }}
+        />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>JUMBLENOTE</Text>
-      
+      <Image
+        source={require("../assets/images/list title.png")}
+        style={{ width: 240, height: 90, marginTop: 45, marginLeft: 45, marginRight: 45 }}
+      />
+
       {/* Search bar */}
       <View style={styles.searchContainer}>
         <TextInput
@@ -80,8 +85,11 @@ export default function Index() {
           >
             <View>
               <Text style={styles.noteTitle}>{note.title}</Text>
-              <Text style={styles.noteDate}>{formatDate(note.date)}</Text>
-              <Text style={styles.notePreview}>{note.content}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                <Text style={styles.noteDate}>{formatDate(note.date)}</Text>
+                <Text style={styles.notePreview}>{note.content}</Text>
+              </View>
+
             </View>
           </TouchableOpacity>
         ))}
@@ -92,7 +100,7 @@ export default function Index() {
         style={styles.addButton}
         onPress={() => router.push('/note/new')}
       >
-        <Text style={styles.addButtonText}>✎</Text>
+        <Text style={styles.addButtonText}>+</Text>
       </TouchableOpacity>
     </View>
   );
@@ -107,33 +115,44 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     padding: 20
   },
+
   jumbleTitle: {
+    fontFamily: 'Mohave',
     fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 10,
   },
+
   jumbleSubtitle: {
+    fontFamily: 'Mohave',
     fontSize: 14,
     textAlign: 'center',
   },
-  
+
   // Main app styles
   container: {
+    fontFamily: 'Mohave',
     flex: 1,
     padding: 20,
     backgroundColor: "#f5f5f5",
   },
+
   header: {
-    fontSize: 24,
-    fontWeight: "bold",
+    paddingTop: 20,
+    fontFamily: 'Mohave',
+    fontSize: 48,
+    fontWeight: "500",
     textAlign: 'center',
     marginVertical: 20,
   },
+
   searchContainer: {
+    fontFamily: 'Mohave',
     flexDirection: 'row',
     marginBottom: 20,
     alignItems: 'center',
   },
+
   searchBar: {
     flex: 1,
     height: 40,
@@ -142,16 +161,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginRight: 10,
   },
+
   sortButton: {
     width: 40,
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   noteList: {
     flex: 1,
   },
+
+  // a note
   noteItem: {
+    fontFamily: 'Mohave',
     backgroundColor: "white",
     padding: 15,
     borderRadius: 10,
@@ -162,20 +186,38 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
+
+  // NOTE STUFF
+  // note title
   noteTitle: {
+    fontFamily: 'Mohave',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "500",
     marginBottom: 5,
+    width: "auto",
+    maxHeight: 23,
+    overflow: "hidden",
   },
+
+  // date
   noteDate: {
-    fontSize: 12,
+    fontFamily: 'Mohave',
+    fontSize: 14,
     color: '#888',
-    marginBottom: 5,
+    minWidth: 70,
   },
+
+  // preview
   notePreview: {
     fontSize: 14,
     color: '#555',
+    paddingLeft: 20,
+    maxWidth: '80%',
+    maxHeight: 23,
+    textOverflow: "ellipsis",
+    overflow: "hidden",
   },
+
   addButton: {
     position: 'absolute',
     bottom: 20,
@@ -187,8 +229,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   addButtonText: {
     color: "white",
-    fontSize: 30,
+    fontSize: 50,
+    alignItems: "center",
   },
 }); 
