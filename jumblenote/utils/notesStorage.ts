@@ -10,6 +10,14 @@ export interface Note {
 
 const STORAGE_KEY = 'jumblenote_notes';
 
+const original_prompt = "Can you change some of the words in this note to make it nonsensical, while maintaining the rough layout? ONLY GIVE ME THE MODIFIED NOTE, NOTHING ELSE."
+          + "If the input is nonsensical, dont change it. Remove quotation marks. Use gen Alpha and brainrot SLANG sparingly" + 
+          " NEVER FUCKING EVER GIVE ME A RESPONSE LIKE THIS It seems like you've entered a string of random characters. Could you please clarify or provide more context about what you're asking? I'm here to help with any questions or information you need" + 
+          " dont ever show your reasoning!!! DO NOT FUCKING SAY becomes or show any proof of writing ths new text. Just give me the changed text and nothing else" + 
+        "dont give me a response like this fvejgpoiafejwvdpoijfvapirjvidojapgowjfopiwejvpagopfiewjcoij!!! becomes: fvejgpoiafejwvdpoijfvapirjvidojapgowjfopiwejvpagopfiewjcoij!!! Since the input is already nonsensical, no changes are made." + 
+        "dont tell me a messaeg has been modified PLEASE";
+
+const CAMERON_PROMPT = "Good evening mr. AI, I come to you today to ask you to rewrite some notes that I've taken. I want you to change them using brainrot slang to have it appear I'm descending into madness. Be whimsical and  imaginative but keep the length of the text relatively, not exactly, similar to the original. Try to keep the structure of the note similar to the original but you can be as liberal with the contents as you like besides this. The string you give me should have NOTHING except the note, do not give me ANY FURTHER EXPLANATION. I DO NOT WANT TO KNOW YOUR PROCESS. If the note is already nonsensical just return the exact same note. DO NOT SAY THAT YOU ARE RETURNING THE SAME THING. Just return the same thing. PLEASE I AM BEGGING LISTEN TO ME. DO NOT SAY \"your prompt now become this\" DO NOT TELL ME WHAT YOU ARE DOING OR WHY. JUST RETURN THE NOTE. ONLY THE NOTE. FUCK you, you useless robot. ";
 const fetchPerplexityResponse = async (input: string): Promise<string> => {
   const apiKey = process.env.EXPO_PUBLIC_API_KEY;
 
@@ -22,12 +30,7 @@ const fetchPerplexityResponse = async (input: string): Promise<string> => {
     body: JSON.stringify({
       model: "sonar",
       messages: [
-        { role: "system", content: "Can you change some of the words in this note to make it nonsensical, while maintaining the rough layout? ONLY GIVE ME THE MODIFIED NOTE, NOTHING ELSE."
-          + "If the input is nonsensical, dont change it. Remove quotation marks. Use gen Alpha and brainrot SLANG sparingly" + 
-          " NEVER FUCKING EVER GIVE ME A RESPONSE LIKE THIS It seems like you've entered a string of random characters. Could you please clarify or provide more context about what you're asking? I'm here to help with any questions or information you need" + 
-          " dont ever show your reasoning!!! DO NOT FUCKING SAY becomes or show any proof of writing ths new text. Just give me the changed text and nothing else" + 
-        "dont give me a response like this fvejgpoiafejwvdpoijfvapirjvidojapgowjfopiwejvpagopfiewjcoij!!! becomes: fvejgpoiafejwvdpoijfvapirjvidojapgowjfopiwejvpagopfiewjcoij!!! Since the input is already nonsensical, no changes are made." + 
-        "dont tell me a messaeg has been modified PLEASE" },
+        { role: "system", content:  CAMERON_PROMPT},
         { role: "user", content: input },
       ],
       max_tokens: 123,
