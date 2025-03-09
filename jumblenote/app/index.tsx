@@ -256,10 +256,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#888',
   },
-  emptyMessage: {
-    textAlign: 'center',
-    marginTop: 40,
-    fontSize: 16,
-    color: '#888',
-  },
 }); 
