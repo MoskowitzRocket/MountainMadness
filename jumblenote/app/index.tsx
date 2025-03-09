@@ -112,7 +112,7 @@ export default function Index() {
       {/* Add Note button */}
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => router.push('/note/new')}
+        onPress={() => router.push(`/note/${Date.now().toString()}`)}
       >
         <Text style={styles.addButtonText}>+</Text>
       </TouchableOpacity>

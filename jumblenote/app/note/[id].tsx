@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Image,
   ActivityIndicator
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
@@ -108,16 +109,14 @@ export default function NoteScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <span>
-            <Text style={{ color: '#F40125' }}>{"\<"} </Text>
+        <TouchableOpacity style={{display: 'flex', flexDirection: 'row'}} onPress={() => router.back()}>
+            <Text style={[styles.backButton, { color: '#F40125' }]}>{"\<"} </Text>
             <Text style={styles.backButton}>Back</Text>
-          </span>
         </TouchableOpacity>
 
         <View style={styles.actionButtons}>
           <TouchableOpacity onPress={handleDelete} style={styles.deleteButton}>
-            <Text style={styles.deleteButtonText}>Delete</Text>
+            <Image style={{width: 40, height: 55, paddingTop: 10,}} source={require("../../assets/images/trashbird.png")}></Image>
           </TouchableOpacity>
         </View>
       </View>
@@ -175,7 +174,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   backButton: {
-    fontSize: 16,
+    fontSize: 20,
     color: '#FFC805',
   },
   actionButtons: {
@@ -200,7 +199,7 @@ const styles = StyleSheet.create({
   },
   titleInput: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: 700,
     marginBottom: 10,
     width: "100%",
     borderWidth: 0,
@@ -211,9 +210,7 @@ const styles = StyleSheet.create({
     textAlignVertical: "top", // Ensures text starts at the top
   },
   contentInput: {
-    outline: 'none',
     fontSize: 16,
-    lineHeight: 24,
     padding: 8,
     width: "100%",
     borderWidth: 0,
