@@ -22,7 +22,7 @@ const fetchPerplexityResponse = async (input: string): Promise<string> => {
     body: JSON.stringify({
       model: "sonar",
       messages: [
-        { role: "system", content: "Can you change some of the words in this note to make it nonsensical, while maintaining the rough layout? ONLY GIVE ME THE MODIFIED NOTE, NOTHING ELSE." },
+        { role: "system", content: "Can you change some of the words in this note to make it nonsensical, while maintaining the rough layout? ONLY GIVE ME THE MODIFIED NOTE, NOTHING ELSE. If the input is nonsensical, dont change it" },
         { role: "user", content: input },
       ],
       max_tokens: 123,
@@ -47,38 +47,26 @@ const fetchPerplexityResponse = async (input: string): Promise<string> => {
   }
 };
 
-
-
 export const loadNotes = async (): Promise<Note[]> => {
   try {
     const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
-    let notes: Note[] = jsonValue ? JSON.parse(jsonValue) : [];
-
-    // Process notes through Perplexity AI
-    const processedNotes = await Promise.all(notes.map(async (note) => {
-      const alteredContent = await fetchPerplexityResponse(note.content);
-      return { ...note, content: alteredContent };
-    }));
-
-    // Save the modified notes back to AsyncStorage
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(processedNotes));
-
-    return processedNotes;
+    return jsonValue ? JSON.parse(jsonValue) : [];
   } catch (e) {
     console.error('Failed to load notes', e);
     return [];
   }
 };
 
-
-
 export const saveNote = async (note: Omit<Note, 'id' | 'date'>): Promise<Note> => {
   try {
+    // Process note content through Perplexity AI before saving
+    const alteredContent = await fetchPerplexityResponse(note.content);
+    
     const notes = await loadNotes();
     const newNote: Note = {
       id: Date.now().toString(),
       title: note.title,
-      content: note.content,
+      content: alteredContent, // Save the altered content
       date: new Date().toISOString(),
     };
     
@@ -92,12 +80,19 @@ export const saveNote = async (note: Omit<Note, 'id' | 'date'>): Promise<Note> =
 };
 
 
+
+
+
 export const updateNote = async (note: Note): Promise<void> => {
   try {
+    // Process note content through Perplexity AI before updating
+    const alteredContent = await fetchPerplexityResponse(note.content);
+    
     const notes = await loadNotes();
     const updatedNotes = notes.map(n => 
-      n.id === note.id ? { ...note, date: new Date().toISOString() } : n
+      n.id === note.id ? { ...note, content: alteredContent, date: new Date().toISOString() } : n
     );
+    
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedNotes));
   } catch (e) {
     console.error('Failed to update note', e);

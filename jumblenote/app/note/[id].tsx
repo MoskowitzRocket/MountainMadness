@@ -127,10 +127,10 @@ export default function NoteScreen() {
           }
           router.back();
         }}>
-          <span>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={{ color: '#F40125' }}>{"\<"} </Text>
             <Text style={styles.backButton}>Back</Text>
-          </span>
+          </View>
         </TouchableOpacity>
 
         <View style={styles.actionButtons}>
@@ -231,7 +231,6 @@ const styles = StyleSheet.create({
     textAlignVertical: "top", // Ensures text starts at the top
   },
   contentInput: {
-    outline: 'none',
     fontSize: 16,
     lineHeight: 24,
     padding: 8,
@@ -242,10 +241,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     textAlignVertical: "top", // Ensures text starts at the top
-  },
-  contentInputFocus: {
-    outline: 'none',
-    borderWidth: 0,
-    borderColor: 'transparent',
   },
 }); 
