@@ -170,10 +170,10 @@ export default function NoteScreen() {
           value={content}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          onChangeText={() => {
-            setContent
-            setIsEdited(true);
-          }}
+          onChangeText={(text) => {
+            setContent(text)
+            setIsEdited(true)
+          }
           placeholder="Start typing your note..."
           placeholderTextColor="#999"
           multiline
