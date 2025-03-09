@@ -102,7 +102,13 @@ export default function Index() {
               <View>
                 <Text style={styles.noteTitle}>{note.title}</Text>
                 <Text style={styles.noteDate}>{formatDate(note.date)}</Text>
-                <Text style={styles.notePreview}>{getPreview(note.content)}</Text>
+                <Text 
+                  style={styles.notePreview}
+                  numberOfLines={2}
+                  ellipsizeMode="tail"
+                >
+                  {getPreview(note.content)}
+                </Text>
               </View>
             </TouchableOpacity>
           ))
@@ -228,7 +234,6 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     maxWidth: '80%',
     maxHeight: 23,
-    textOverflow: "ellipsis",
     overflow: "hidden",
   },
 
