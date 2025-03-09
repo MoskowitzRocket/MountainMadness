@@ -253,6 +253,8 @@ const styles = StyleSheet.create({
     color: "#555",
     flexShrink: 1,
     maxWidth: '80%',
+    maxHeight: 23,
+    overflow: "hidden",
   },
   // **************************************************************************
 
