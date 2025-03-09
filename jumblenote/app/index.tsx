@@ -307,5 +307,4 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 10,
   },
-
 }); 
