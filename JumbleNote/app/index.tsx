@@ -7,10 +7,36 @@ import {
   ScrollView,
   StyleSheet,
   Image,
+  Dimensions
 } from "react-native";
 import { router } from "expo-router";
 import PlusIcon from "@/components/PlusIcon";
+import JumboLogo from "../components/JumboLogo"
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
+const { width } = Dimensions.get("window");
+
+const getRandomColor = () => {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+const NoteTitle = () => {
+  const text = "NOTE".split("");
+  return (
+    <Text style={styles.jumbleTitle}>
+      {text.map((letter, index) => (
+        <Text key={index} style={{ color: getRandomColor() }}>
+          {letter}
+        </Text>
+      ))}
+    </Text>
+  );
+};
 export default function Index() {
   const [notes, setNotes] = useState<Array<{id: number, title: string, content: string, date: string}>>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -56,7 +82,14 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>JUMBLENOTE</Text>
+      <View style={styles.logoWrapper}>
+        <JumboLogo width={50} height={50} />
+      </View>
+      <Text style={styles.jumbleTitle}>
+        JUMBLE
+        <NoteTitle />
+      </Text>
+      <Text style={styles.jumbleSubtitle}>THE ONLY NOTETAKING APP YOU WILL EVER NEED</Text>
       
       {/* Search bar */}
       <View style={styles.searchContainer}>
@@ -129,6 +162,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: 'center',
     marginVertical: 20,
+  },
+  logoWrapper: {
+    position: "absolute",
+    zIndex: 10,
+    top: 9,
+    left: width * 0.47,
+    transform: [{ rotate: "4.39deg"}]
   },
   searchContainer: {
     flexDirection: 'row',
