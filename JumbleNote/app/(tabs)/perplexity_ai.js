@@ -18,7 +18,7 @@ export default function PerPlexity() {
     body: JSON.stringify({
       model: "sonar",
       messages: [
-        { role: "system", content: "Be precise and concise." },
+        { role: "system", content: "Can you change some of the words in this note to make it nonsensical, while maintaing the rough layout., ONLY GIVE ME THE MODIFIED NOTE NOT ANYT OTHER WORDS" },
         { role: "user", content: input },
       ],
       max_tokens: 123,

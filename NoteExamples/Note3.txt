@@ -1,0 +1,4 @@
+- Passport
+- Plane tickets
+- Hotel reservation
+- Travel adapter
