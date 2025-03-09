@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.kmoskowitz.jumblenote"
     },
     "web": {
       "bundler": "metro",
@@ -39,6 +40,14 @@
     },
     "assetBundlePatterns": [
       "assets/fonts/*"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "37dbb51d-0987-4602-8c8a-13d15031dc01"
+      }
+    }
   }
 }

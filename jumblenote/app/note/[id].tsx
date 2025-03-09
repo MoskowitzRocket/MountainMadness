@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
   ScrollView,
   Alert,
   ActivityIndicator
@@ -21,7 +21,7 @@ export default function NoteScreen() {
   const [loading, setLoading] = useState(true);
   const [drawing, setDrawing] = useState("");
   const isNewNote = id === 'new';
-  
+
   useEffect(() => {
     const loadNote = async () => {
       if (!isNewNote) {
@@ -42,16 +42,16 @@ export default function NoteScreen() {
       }
       setLoading(false);
     };
-    
+
     loadNote();
   }, [id, isNewNote]);
-  
+
   const handleSave = async () => {
     if (!title.trim()) {
       Alert.alert('Error', 'Please enter a title');
       return;
     }
-    
+
     try {
       if (isNewNote) {
         await saveNote({ title, content, drawing });
@@ -70,13 +70,13 @@ export default function NoteScreen() {
       Alert.alert('Error', 'Failed to save note');
     }
   };
-  
+
   const handleDelete = async () => {
     if (isNewNote) {
       router.back();
       return;
     }
-    
+
     Alert.alert(
       'Delete Note',
       'Are you sure you want to delete this note?',
@@ -98,7 +98,7 @@ export default function NoteScreen() {
       ]
     );
   };
-  
+
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -106,7 +106,7 @@ export default function NoteScreen() {
       </View>
     );
   }
-  
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -157,6 +157,7 @@ export default function NoteScreen() {
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 20,
     flex: 1,
     backgroundColor: "#f5f5f5",
   },
@@ -172,6 +173,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
     backgroundColor: '#fff',
+    width: "auto",
   },
   backButton: {
     fontSize: 16,
