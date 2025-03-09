@@ -173,7 +173,7 @@ export default function NoteScreen() {
           onChangeText={(text) => {
             setContent(text)
             setIsEdited(true)
-          }
+          }}
           placeholder="Start typing your note..."
           placeholderTextColor="#999"
           multiline
