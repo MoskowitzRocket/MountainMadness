@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
   ScrollView,
   Alert,
   ActivityIndicator
@@ -18,7 +18,7 @@ export default function NoteScreen() {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
   const isNewNote = id === 'new';
-  
+
   useEffect(() => {
     const loadNote = async () => {
       if (!isNewNote) {
@@ -38,16 +38,16 @@ export default function NoteScreen() {
       }
       setLoading(false);
     };
-    
+
     loadNote();
   }, [id, isNewNote]);
-  
+
   const handleSave = async () => {
     if (!title.trim()) {
       Alert.alert('Error', 'Please enter a title');
       return;
     }
-    
+
     try {
       if (isNewNote) {
         await saveNote({ title, content });
@@ -65,13 +65,13 @@ export default function NoteScreen() {
       Alert.alert('Error', 'Failed to save note');
     }
   };
-  
+
   const handleDelete = async () => {
     if (isNewNote) {
       router.back();
       return;
     }
-    
+
     Alert.alert(
       'Delete Note',
       'Are you sure you want to delete this note?',
@@ -93,7 +93,7 @@ export default function NoteScreen() {
       ]
     );
   };
-  
+
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -101,25 +101,25 @@ export default function NoteScreen() {
       </View>
     );
   }
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
           <Text style={styles.backButton}>← Back</Text>
         </TouchableOpacity>
-        
+
         <View style={styles.actionButtons}>
           <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
             <Text style={styles.saveButtonText}>Save</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity onPress={handleDelete} style={styles.deleteButton}>
             <Text style={styles.deleteButtonText}>Delete</Text>
           </TouchableOpacity>
         </View>
       </View>
-      
+
       <ScrollView style={styles.content}>
         <TextInput
           style={styles.titleInput}
@@ -128,7 +128,7 @@ export default function NoteScreen() {
           placeholder="Note title"
           placeholderTextColor="#999"
         />
-        
+
         <TextInput
           style={styles.contentInput}
           value={content}
@@ -145,6 +145,7 @@ export default function NoteScreen() {
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 20,
     flex: 1,
     backgroundColor: "#f5f5f5",
   },
@@ -160,6 +161,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
     backgroundColor: '#fff',
+    width: "auto",
   },
   backButton: {
     fontSize: 16,
