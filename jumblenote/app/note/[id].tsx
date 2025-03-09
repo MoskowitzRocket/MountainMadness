@@ -133,9 +133,33 @@ export default function NoteScreen() {
             <TouchableOpacity onPress={() => {
               setSavingNote(true);
               flyjumbofly();
-              setTimeout(() => {
-                router.back();
-              }, 3000);
+              
+              // Save note before navigating back
+              const saveCurrentNote = async () => {
+                try {
+                  if (title.trim() === '') {
+                    // Don't save empty notes
+                    router.back();
+                    return;
+                  }
+                  
+                  if (isNewNote) {
+                    // Create new note
+                    await saveNote({ title, content });
+                  } else if (isEdited) {
+                    // Update existing note
+                    await updateNote({ id: id as string, title, content, date: '' });
+                  }
+                } catch (error) {
+                  console.error('Error saving note:', error);
+                }
+                
+                setTimeout(() => {
+                  router.back();
+                }, 3000);
+              };
+              
+              saveCurrentNote();
             }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={{ color: '#F40125' }}>{"\<"} </Text>
