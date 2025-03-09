@@ -178,6 +178,7 @@ export default function NoteScreen() {
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 20,
     flex: 1,
     backgroundColor: "#ffffff",
   },
@@ -191,6 +192,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     backgroundColor: '#fff',
+    width: "auto",
   },
   backButton: {
     fontSize: 16,
