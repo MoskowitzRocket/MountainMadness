@@ -2,6 +2,7 @@
   "expo": {
     "name": "Jumblenote",
     "slug": "Jumblenote",
+    "owner": "camblsoup",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/jumbo.png",
