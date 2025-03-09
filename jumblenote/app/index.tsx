@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,32 +7,44 @@ import {
   ScrollView,
   StyleSheet,
   Image,
+  ActivityIndicator,
 } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
+import { loadNotes, Note } from "../utils/notesStorage";
 
 export default function Index() {
-  const [notes, setNotes] = useState<Array<{id: number, title: string, content: string, date: string}>>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate loading screen
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      // Add sample notes
-      if (notes.length === 0) {
-        setNotes([
-          { id: 1, title: "John's Skincare Routine", content: "exfoliator, moisturizer...", date: "2013-06-18" },
-          { id: 2, title: "Date Ideas", content: "lol you're single, remember?", date: "2082-10-23" },
-          { id: 3, title: "Shopping List", content: "Eggs, knife, oats, peanuts...", date: "2025-05-05" },
-          { id: 4, title: "Things that John likes", content: "Horses, dogs, flowers, b...", date: "1998-03-23" },
-          { id: 5, title: "Brainrot Dictionary for Dad", content: "Level 10 gyatt, sigma boy,...", date: "2013-01-27" },
-          { id: 6, title: "Homework Checklist", content: "Lorem ipsum dolor sit...", date: "2024-10-03" },
-        ]);
+    const fetchNotes = async () => {
+      try {
+        // Display splash screen for at least 1 second
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const storedNotes = await loadNotes();
+        setNotes(storedNotes);
+      } catch (error) {
+        console.error("Error loading notes:", error);
+      } finally {
+        setIsLoading(false);
       }
-    }, 2000);
-    return () => clearTimeout(timer);
+    };
+
+    fetchNotes();
   }, []);
+
+  // Refresh notes when the screen is focused (coming back from note edit)
+  useFocusEffect(
+    useCallback(() => {
+      const loadAllNotes = async () => {
+        const storedNotes = await loadNotes();
+        setNotes(storedNotes);
+      };
+      
+      loadAllNotes();
+    }, [])
+  );
 
   const filteredNotes = notes.filter(note => 
     note.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -44,11 +56,17 @@ export default function Index() {
     return date.toISOString().split('T')[0];
   };
 
+  // Show brief note preview
+  const getPreview = (content: string) => {
+    return content.length > 30 ? content.substring(0, 30) + '...' : content;
+  };
+
   if (isLoading) {
     return (
       <View style={styles.splashContainer}>
         <Text style={styles.jumbleTitle}>JUMBLENOTE</Text>
         <Text style={styles.jumbleSubtitle}>THE ONLY NOTETAKING APP YOU WILL EVER NEED</Text>
+        <ActivityIndicator size="large" color="#000" style={{marginTop: 20}} />
       </View>
     );
   }
@@ -72,19 +90,23 @@ export default function Index() {
 
       {/* List of notes */}
       <ScrollView style={styles.noteList}>
-        {filteredNotes.map((note) => (
-          <TouchableOpacity
-            key={note.id}
-            style={styles.noteItem}
-            onPress={() => router.push(`/note/${note.id}`)}
-          >
-            <View>
-              <Text style={styles.noteTitle}>{note.title}</Text>
-              <Text style={styles.noteDate}>{formatDate(note.date)}</Text>
-              <Text style={styles.notePreview}>{note.content}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
+        {filteredNotes.length === 0 ? (
+          <Text style={styles.emptyMessage}>No notes yet. Create your first note!</Text>
+        ) : (
+          filteredNotes.map((note) => (
+            <TouchableOpacity
+              key={note.id}
+              style={styles.noteItem}
+              onPress={() => router.push(`/note/${note.id}`)}
+            >
+              <View>
+                <Text style={styles.noteTitle}>{note.title}</Text>
+                <Text style={styles.noteDate}>{formatDate(note.date)}</Text>
+                <Text style={styles.notePreview}>{getPreview(note.content)}</Text>
+              </View>
+            </TouchableOpacity>
+          ))
+        )}
       </ScrollView>
 
       {/* Add Note button */}
@@ -190,5 +212,11 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: "white",
     fontSize: 30,
+  },
+  emptyMessage: {
+    textAlign: 'center',
+    marginTop: 40,
+    fontSize: 16,
+    color: '#888',
   },
 }); 

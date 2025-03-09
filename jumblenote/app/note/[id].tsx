@@ -1,50 +1,144 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  ScrollView,
+  Alert,
+  ActivityIndicator
+} from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
+import { getNoteById, saveNote, updateNote, deleteNote } from '../../utils/notesStorage';
 
 export default function NoteScreen() {
   const { id } = useLocalSearchParams();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [loading, setLoading] = useState(true);
+  const isNewNote = id === 'new';
   
   useEffect(() => {
-    if (id !== 'new') {
-      setTitle(`Note #${id}`);
-      setContent(`This is the content for note ${id}`);
-    }
-  }, [id]);
+    const loadNote = async () => {
+      if (!isNewNote) {
+        try {
+          const noteData = await getNoteById(id as string);
+          if (noteData) {
+            setTitle(noteData.title);
+            setContent(noteData.content);
+          } else {
+            Alert.alert('Error', 'Note not found');
+            router.back();
+          }
+        } catch (error) {
+          console.error('Error loading note:', error);
+          Alert.alert('Error', 'Failed to load note');
+        }
+      }
+      setLoading(false);
+    };
+    
+    loadNote();
+  }, [id, isNewNote]);
   
-  const handleSave = () => {
-    console.log('Saving note:', { id, title, content });
-    router.back();
+  const handleSave = async () => {
+    if (!title.trim()) {
+      Alert.alert('Error', 'Please enter a title');
+      return;
+    }
+    
+    try {
+      if (isNewNote) {
+        await saveNote({ title, content });
+      } else {
+        await updateNote({
+          id: id as string,
+          title,
+          content,
+          date: new Date().toISOString()
+        });
+      }
+      router.back();
+    } catch (error) {
+      console.error('Error saving note:', error);
+      Alert.alert('Error', 'Failed to save note');
+    }
   };
+  
+  const handleDelete = async () => {
+    if (isNewNote) {
+      router.back();
+      return;
+    }
+    
+    Alert.alert(
+      'Delete Note',
+      'Are you sure you want to delete this note?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteNote(id as string);
+              router.back();
+            } catch (error) {
+              console.error('Error deleting note:', error);
+              Alert.alert('Error', 'Failed to delete note');
+            }
+          }
+        }
+      ]
+    );
+  };
+  
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
   
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.back()}>
-        <Text style={styles.backButton}>← Back</Text>
-      </TouchableOpacity>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <Text style={styles.backButton}>← Back</Text>
+        </TouchableOpacity>
+        
+        <View style={styles.actionButtons}>
+          <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
+            <Text style={styles.saveButtonText}>Save</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity onPress={handleDelete} style={styles.deleteButton}>
+            <Text style={styles.deleteButtonText}>Delete</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
       
-      <Text style={styles.pageTitle}>{id === 'new' ? 'New Note' : title}</Text>
-      
-      <TextInput 
-        style={styles.titleInput}
-        value={title}
-        onChangeText={setTitle}
-        placeholder="Note title"
-      />
-      
-      <TextInput
-        style={styles.contentInput}
-        multiline
-        value={content}
-        onChangeText={setContent}
-        placeholder="Start typing..."
-      />
-      
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Save</Text>
-      </TouchableOpacity>
+      <ScrollView style={styles.content}>
+        <TextInput
+          style={styles.titleInput}
+          value={title}
+          onChangeText={setTitle}
+          placeholder="Note title"
+          placeholderTextColor="#999"
+        />
+        
+        <TextInput
+          style={styles.contentInput}
+          value={content}
+          onChangeText={setContent}
+          placeholder="Start typing your note..."
+          placeholderTextColor="#999"
+          multiline
+          textAlignVertical="top"
+        />
+      </ScrollView>
     </View>
   );
 }
@@ -52,43 +146,56 @@ export default function NoteScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: "#f5f5f5",
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    backgroundColor: '#fff',
   },
   backButton: {
     fontSize: 16,
-    marginBottom: 20,
+    color: '#007AFF',
   },
-  pageTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+  actionButtons: {
+    flexDirection: 'row',
+  },
+  saveButton: {
+    marginRight: 15,
+  },
+  saveButtonText: {
+    color: '#007AFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  deleteButton: {},
+  deleteButtonText: {
+    color: '#FF3B30',
+    fontSize: 16,
+  },
+  content: {
+    flex: 1,
+    padding: 16,
   },
   titleInput: {
-    fontSize: 18,
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 15,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    padding: 8,
   },
   contentInput: {
     flex: 1,
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 8,
     fontSize: 16,
-    marginBottom: 20,
-    textAlignVertical: "top",
-    minHeight: 200,
-  },
-  saveButton: {
-    backgroundColor: "#333",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  saveButtonText: {
-    color: "white",
-    fontWeight: "bold",
+    lineHeight: 24,
+    padding: 8,
+    minHeight: 300,
   },
 }); 
