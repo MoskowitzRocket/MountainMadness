@@ -4,14 +4,13 @@ import { Svg, Path } from "react-native-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import SketchCanvas from "@terrylinla/react-native-sketch-canvas";
-// Get full screen size including the notch & status bar
 const { width, height } = Dimensions.get("screen");
 
 interface SketchCanvasProps {
     savedDrawing?: string;
     onSaveDrawing: (drawing: string) => void;
 }
+
 export default function DrawingCanvas({savedDrawing, onSaveDrawing}: SketchCanvasProps) {
     const [paths, setPaths] = useState<string[][]>([]); // Stores all drawn paths
     const [currentPath, setCurrentPath] = useState<string[]>([]); // Stores ongoing drawing

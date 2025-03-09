@@ -5,6 +5,7 @@ export interface Note {
   title: string;
   content: string;
   date: string;
+  drawing: string;
 }
 
 const STORAGE_KEY = 'jumblenote_notes';
@@ -29,6 +30,7 @@ export const saveNote = async (note: Omit<Note, 'id' | 'date'>): Promise<Note> =
       title: note.title,
       content: note.content,
       date: new Date().toISOString(),
+      drawing: note.drawing || "",
     };
     
     const updatedNotes = [...notes, newNote];
@@ -45,8 +47,9 @@ export const updateNote = async (note: Note): Promise<void> => {
   try {
     const notes = await loadNotes();
     const updatedNotes = notes.map(n => 
-      n.id === note.id ? { ...note, date: new Date().toISOString() } : n
+      n.id === note.id ? { ...n, title: note.title, content: note.content, date: new Date().toISOString(), drawing: note.drawing, } : n
     );
+    
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedNotes));
   } catch (e) {
     console.error('Failed to update note', e);
@@ -69,7 +72,16 @@ export const deleteNote = async (id: string): Promise<void> => {
 export const getNoteById = async (id: string): Promise<Note | null> => {
   try {
     const notes = await loadNotes();
-    return notes.find(note => note.id === id) || null;
+    const note = notes.find(note => note.id === id);
+
+    if(note){
+      return{
+        ...note,
+        drawing: note.drawing || "",
+      };
+    }
+    return null;
+    
   } catch (e) {
     console.error('Failed to get note', e);
     return null;

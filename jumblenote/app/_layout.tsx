@@ -9,10 +9,8 @@ export default function Layout() {
     // You can add more variants as needed
   });
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    />
+    <Stack screenOptions={{ headerShown: false,}}>
+      {/* <Stack.Screen name="index" options = {{title}} /> */}
+    </Stack>
   );
 } 

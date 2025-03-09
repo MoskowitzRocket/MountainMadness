@@ -11,12 +11,15 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { getNoteById, saveNote, updateNote, deleteNote } from '../../utils/notesStorage';
+import SketchCanvas from "@/components/drawing/SketchCanvas";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function NoteScreen() {
   const { id } = useLocalSearchParams();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
+  const [drawing, setDrawing] = useState("");
   const isNewNote = id === 'new';
   
   useEffect(() => {
@@ -27,6 +30,7 @@ export default function NoteScreen() {
           if (noteData) {
             setTitle(noteData.title);
             setContent(noteData.content);
+            setDrawing(noteData.drawing || "");
           } else {
             Alert.alert('Error', 'Note not found');
             router.back();
@@ -50,12 +54,13 @@ export default function NoteScreen() {
     
     try {
       if (isNewNote) {
-        await saveNote({ title, content });
+        await saveNote({ title, content, drawing });
       } else {
         await updateNote({
           id: id as string,
           title,
           content,
+          drawing,
           date: new Date().toISOString()
         });
       }
@@ -103,43 +108,50 @@ export default function NoteScreen() {
   }
   
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backButton}>← Back</Text>
-        </TouchableOpacity>
-        
-        <View style={styles.actionButtons}>
-          <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-            <Text style={styles.saveButtonText}>Save</Text>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Text style={styles.backButton}>← Back</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity onPress={handleDelete} style={styles.deleteButton}>
-            <Text style={styles.deleteButtonText}>Delete</Text>
-          </TouchableOpacity>
+          <View style={styles.actionButtons}>
+            <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
+              <Text style={styles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity onPress={handleDelete} style={styles.deleteButton}>
+              <Text style={styles.deleteButtonText}>Delete</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        <View style={styles.content}>
+          <TextInput
+            style={styles.titleInput}
+            value={title}
+            onChangeText={setTitle}
+            placeholder="Note title"
+            placeholderTextColor="#999"
+          />
+          
+          <TextInput
+            style={styles.contentInput}
+            value={content}
+            onChangeText={setContent}
+            placeholder="Start typing your note..."
+            placeholderTextColor="#999"
+            multiline
+            textAlignVertical="top"
+          />
+
+          <Text style={styles.label}>Draw something: </Text>
+          <View style={styles.drawingContainer}>
+            <SketchCanvas savedDrawing={drawing} onSaveDrawing={setDrawing}/>
+          </View>
         </View>
       </View>
-      
-      <ScrollView style={styles.content}>
-        <TextInput
-          style={styles.titleInput}
-          value={title}
-          onChangeText={setTitle}
-          placeholder="Note title"
-          placeholderTextColor="#999"
-        />
-        
-        <TextInput
-          style={styles.contentInput}
-          value={content}
-          onChangeText={setContent}
-          placeholder="Start typing your note..."
-          placeholderTextColor="#999"
-          multiline
-          textAlignVertical="top"
-        />
-      </ScrollView>
-    </View>
+    </GestureHandlerRootView>
   );
 }
 
@@ -197,5 +209,18 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     padding: 8,
     minHeight: 300,
+  },
+  label: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 20,
+    marginBottom: 5,
+  },
+  drawingContainer: {
+    height: 300, 
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    overflow: "hidden",
   },
 }); 

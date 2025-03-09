@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { router, useFocusEffect } from "expo-router";
 import { loadNotes, Note } from "../utils/notesStorage";
-
 export default function Index() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -249,12 +248,6 @@ const styles = StyleSheet.create({
     fontSize: 40,
     height: 55,
 
-  },
-  emptyMessage: {
-    textAlign: 'center',
-    marginTop: 40,
-    fontSize: 16,
-    color: '#888',
   },
   emptyMessage: {
     textAlign: 'center',
