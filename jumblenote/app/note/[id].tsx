@@ -29,6 +29,8 @@ export default function NoteScreen() {
 
   const [savingNote, setSavingNote] = useState(false);
 
+  const [contentHeight, setContentHeight] = useState(38);
+
   const flyjumbofly = () => {
     // Loop between images by animating opacity
     Animated.loop(
