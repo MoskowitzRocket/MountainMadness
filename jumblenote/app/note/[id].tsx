@@ -108,7 +108,25 @@ export default function NoteScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={async () => {
+          if (title.trim() || content.trim()) {
+            try {
+              if (isNewNote) {
+                await saveNote({ title: title || "Untitled", content });
+              } else {
+                await updateNote({
+                  id: id as string,
+                  title: title || "Untitled",
+                  content,
+                  date: new Date().toISOString()
+                });
+              }
+            } catch (error) {
+              console.error("Error saving note:", error);
+            }
+          }
+          router.back();
+        }}>
           <span>
             <Text style={{ color: '#F40125' }}>{"\<"} </Text>
             <Text style={styles.backButton}>Back</Text>
