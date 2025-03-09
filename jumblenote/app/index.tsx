@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Image,
   ActivityIndicator,
+  Animated,
 } from "react-native";
 import { router, useFocusEffect } from "expo-router";
 import { loadNotes, Note } from "../utils/notesStorage";
@@ -17,11 +18,33 @@ export default function Index() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
+  const [JumboUp] = useState(new Animated.Value(0)); // position for bird1
+  const [JumboDown] = useState(new Animated.Value(100)); // position for bird2
+
+  //////////////////////////////////////////////////////////////////////////////////////
+  // flying jumbo
+  const flyjumbofly = () => {
+    // Loop between images by animating opacity
+    Animated.loop(
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(JumboUp, { toValue: 1, duration: 600, useNativeDriver: true }), // show 1
+          Animated.timing(JumboDown, { toValue: 0, duration: 0, useNativeDriver: true }), // hide 2
+        ]),
+        Animated.parallel([
+          Animated.timing(JumboUp, { toValue: 0, duration: 0, useNativeDriver: true }), // show 2
+          Animated.timing(JumboDown, { toValue: 1, duration: 600, useNativeDriver: true }), // hide 1
+        ]),
+      ])
+    ).start();
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     const fetchNotes = async () => {
       try {
         // Display splash screen for at least 1 second
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 5000));
         const storedNotes = await loadNotes();
         setNotes(storedNotes);
       } catch (error) {
@@ -30,55 +53,82 @@ export default function Index() {
         setIsLoading(false);
       }
     };
-
     fetchNotes();
-  }, []);
+    flyjumbofly();
 
-  // Refresh notes when the screen is focused (coming back from note edit)
+  }, []);
+  //////////////////////////////////////////////////////////////////////////////////////
   useFocusEffect(
     useCallback(() => {
       const loadAllNotes = async () => {
         const storedNotes = await loadNotes();
         setNotes(storedNotes);
       };
-      
+
       loadAllNotes();
     }, [])
   );
 
+
+  //////////////////////////////////////////////////////////////////////////////////////
   const filteredNotes = notes.filter(note =>
     note.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  // Function to format date
+  //////////////////////////////////////////////////////////////////////////////////////
+  // format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toISOString().split('T')[0];
   };
-
-  // Show brief note preview
+  //////////////////////////////////////////////////////////////////////////////////////
+  // show date preview
   const getPreview = (content: string) => {
     return content.length > 30 ? content.substring(0, 30) + '...' : content;
   };
+  //////////////////////////////////////////////////////////////////////////////////////
 
   if (isLoading) {
     return (
       <View style={styles.splashContainer}>
-        <Text style={styles.jumbleTitle}>JUMBLENOTE</Text>
-        <Text style={styles.jumbleSubtitle}>THE ONLY NOTETAKING APP YOU WILL EVER NEED</Text>
-        <ActivityIndicator size="large" color="#000" style={{marginTop: 20}} />
+        <Image
+          source={require("../assets/images/slogan2.png")}
+          style={{ width: 335, height: 160 }}
+        />
+        {/***************************************** FLY, JUMBO, FLY! *****************************************/}
+
+        <View style={styles.jumboup}>
+          <Animated.Image
+            source={require("../assets/images/jumbofly1.png")} // jumbo up
+            style={[styles.birdImage, { opacity: JumboUp },]}
+          />
+
+        </View>
+
+        <View style={styles.jumbodown}>
+          <Animated.Image
+            source={require("../assets/images/jumbofly2.png")} // jumbo down
+            style={[styles.birdImage, { opacity: JumboDown },]}
+          />
+        </View>
       </View>
+
+
     );
   }
-
+  //////////////////////////////////////////////////////////////////////////////////////
+  // main page
   return (
-    <View style={styles.container}>
-      <Image
-        source={require("../assets/images/list title.png")}
-        style={{ width: 240, height: 90, marginTop: 45, marginLeft: 45, marginRight: 45 }}
-      />
 
-      {/* Search bar */}
+    <View style={styles.container}>
+      {/* logo */}
+      <View style={styles.centercontainer}>
+        <Image
+          source={require("../assets/images/name2.png")}
+          style={{ width: 240, height: 90, marginTop: 45, marginLeft: 45, marginRight: 45 }}
+        />
+      </View>
+
+      {/***************************************** SEARCH BAR  *****************************************/}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchBar}
@@ -88,7 +138,7 @@ export default function Index() {
         />
       </View>
 
-      {/* List of notes */}
+      {/***************************************** LIST OF NOTES  *****************************************/}
       <ScrollView style={styles.noteList}>
         {filteredNotes.length === 0 ? (
           <Text style={styles.emptyMessage}>No notes yet. Create your first note!</Text>
@@ -101,15 +151,17 @@ export default function Index() {
             >
               <View>
                 <Text style={styles.noteTitle}>{note.title}</Text>
-                <Text style={styles.noteDate}>{formatDate(note.date)}</Text>
-                <Text style={styles.notePreview}>{getPreview(note.content)}</Text>
+                <View style={{ flexDirection: "row" }}>
+                  <Text style={styles.noteDate}>{formatDate(note.date)}</Text>
+                  <Text style={styles.notePreview}>{getPreview(note.content)}</Text>
+                </View>
+
               </View>
             </TouchableOpacity>
           ))
         )}
       </ScrollView>
 
-      {/* Add Note button */}
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => router.push('/note/new')}
@@ -121,7 +173,6 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-  // Splash screen styles
   splashContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -130,17 +181,8 @@ const styles = StyleSheet.create({
     padding: 20
   },
 
-  jumbleTitle: {
-    fontFamily: 'Mohave',
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-
-  jumbleSubtitle: {
-    fontFamily: 'Mohave',
-    fontSize: 14,
-    textAlign: 'center',
+  centercontainer: {
+    alignItems: 'center'
   },
 
   // Main app styles
@@ -149,15 +191,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#f5f5f5",
-  },
-
-  header: {
-    paddingTop: 20,
-    fontFamily: 'Mohave',
-    fontSize: 48,
-    fontWeight: "500",
-    textAlign: 'center',
-    marginVertical: 20,
   },
 
   searchContainer: {
@@ -174,13 +207,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 15,
     marginRight: 10,
-  },
-
-  sortButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 
   noteList: {
@@ -201,6 +227,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
 
+  // **************************************************************************
   // NOTE STUFF
   // note title
   noteTitle: {
@@ -215,22 +242,19 @@ const styles = StyleSheet.create({
 
   // date
   noteDate: {
-    fontFamily: 'Mohave',
     fontSize: 14,
-    color: '#888',
-    minWidth: 70,
+    color: "#888",
+    marginRight: 10, // Spacing between date and preview
+    flexShrink: 0, // Prevents shrinking
   },
 
-  // preview
   notePreview: {
     fontSize: 14,
-    color: '#555',
-    paddingLeft: 20,
+    color: "#555",
+    flexShrink: 1,
     maxWidth: '80%',
-    maxHeight: 23,
-    textOverflow: "ellipsis",
-    overflow: "hidden",
   },
+  // **************************************************************************
 
   addButton: {
     position: 'absolute',
@@ -256,10 +280,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#888',
   },
-  emptyMessage: {
-    textAlign: 'center',
-    marginTop: 40,
-    fontSize: 16,
-    color: '#888',
+
+  //***************************************************************** */
+  jumboup: {
+    position: "absolute",
+    top: 620,
+    left: 0,
+    right: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  jumbodown: {
+    position: "absolute",
+    top: 670,
+    left: 0,
+    right: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  birdImage: {
+    width: 100,
+    height: 100,
+    position: "absolute",
+    zIndex: 10,
   },
 }); 
