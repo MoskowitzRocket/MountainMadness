@@ -20,6 +20,7 @@ export default function NoteScreen() {
   const [isFocused, setIsFocused] = useState(false);
   const [titleHeight, setTitleHeight] = useState(50); // Initial height
   const [contentHeight, setContentHeight] = useState(38);
+  const [isEdited, setIsEdited] = useState(false);
   const isNewNote = id === 'new';
 
   useEffect(() => {
@@ -48,6 +49,11 @@ export default function NoteScreen() {
   const handleSave = async () => {
     if (!title.trim()) {
       Alert.alert('Error', 'Please enter a title');
+      return;
+    }
+
+    if (!isEdited)
+    {
       return;
     }
 
@@ -164,7 +170,10 @@ export default function NoteScreen() {
           value={content}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          onChangeText={setContent}
+          onChangeText={() => {
+            setContent
+            setIsEdited(true);
+          }}
           placeholder="Start typing your note..."
           placeholderTextColor="#999"
           multiline
